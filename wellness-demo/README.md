@@ -1,1 +1,0 @@
-# adobesummit2015
