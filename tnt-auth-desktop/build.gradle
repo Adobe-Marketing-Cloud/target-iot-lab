@@ -1,0 +1,38 @@
+apply plugin: 'application'
+apply plugin: 'idea'
+
+repositories {
+  mavenCentral()
+}
+
+sourceSets {
+  main {
+    java {
+      srcDir 'src'
+    }
+    resources {
+      srcDir 'resources'
+    }
+  }
+}
+
+dependencies {
+  compile 'org.apache.commons:commons-lang3:3.4'
+  compile 'org.apache.commons:commons-io:1.3.2'
+  compile 'org.json:json:20080701'
+}
+
+mainClassName = 'com.adobe.summit2016.Main'
+
+version = 1.0
+
+jar {
+  dependsOn configurations.runtime
+  manifest {
+    attributes 'Main-Class': mainClassName
+  }
+
+  from {
+    configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+  }
+}

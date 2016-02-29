@@ -1,0 +1,3 @@
+#!/bin/bash
+
+java -jar -DclientCode=adobeinternalsummitl -Dmbox=summit-2016-desk-app  build/libs/tnt-auth-desktop-1.0.jar
