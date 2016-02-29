@@ -1,0 +1,6 @@
+batch=thirdPartyId, name, mood
+labuser1, Nipun, glad
+labuser2, John, glad
+labuser3, David, grim
+labuser4, Mary, angry
+labuser5, Jane, grim
