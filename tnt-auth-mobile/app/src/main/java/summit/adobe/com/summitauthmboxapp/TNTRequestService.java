@@ -27,7 +27,8 @@ public class TNTRequestService {
     this.clientCode = "adobeinternalsummitl";
   }
 
-  public String getContent(String mbox, Map<String, String> profileParameters) throws TntApiCallException {
+  public String getContent(String mbox, Map<String, String> mboxParameters,
+                           Map<String, String> profileParameters) throws TntApiCallException {
     String host = StringUtils.defaultString(edgeHost, clientCode + ".tt.omtrdc.net");
     try {
       URL urlToRequest = new URL("http://" + host + "/rest/v1/mbox/" + thirdPartyId +
@@ -40,6 +41,7 @@ public class TNTRequestService {
       JSONObject mboxRequestJson = new JSONObject();
       mboxRequestJson.put("mbox", mbox);
       mboxRequestJson.put("thirdPartyId", thirdPartyId);
+      mboxRequestJson.put("mboxParameters", new JSONObject(mboxParameters));
       mboxRequestJson.put("profileParameters", new JSONObject(profileParameters));
       DataOutputStream dStream = new DataOutputStream(urlConnection.getOutputStream());
       dStream.writeBytes(mboxRequestJson.toString());

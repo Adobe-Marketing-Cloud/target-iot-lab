@@ -28,10 +28,12 @@ public class MainActivity extends AppCompatActivity {
   private static final long DELAY = 5;
 
   private VelocityTracker mVelocityTracker = null;
-  private EditText mAuthenticatedId;
+  private EditText mProfileId;
+  private EditText mUserName;
   private ImageView mImageView;
-  private Button submitButton;
-  private volatile String authenticatedId;
+  private Button mSubmitButton;
+  private volatile String profileId;
+  private volatile String userName;
   private TNTRequestService tntRequestService;
   private ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
@@ -42,23 +44,29 @@ public class MainActivity extends AppCompatActivity {
 
     mImageView = (ImageView) findViewById(R.id.imageView);
 
-    mAuthenticatedId = (EditText) findViewById(R.id.authenticateId);
+    mUserName = (EditText) findViewById(R.id.userName);
 
-    submitButton = (Button) findViewById(R.id.submit);
+    mProfileId = (EditText) findViewById(R.id.profileId);
 
-    submitButton.setOnClickListener(new View.OnClickListener() {
+    mSubmitButton = (Button) findViewById(R.id.submit);
+
+    mSubmitButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        String authenticatedIdValue = mAuthenticatedId.getText().toString();
-        if (StringUtils.isBlank(authenticatedIdValue)) {
-          Toast toast = Toast.makeText(MainActivity.this, "Authenticated Id cannot be empty", Toast.LENGTH_SHORT);
+        String thirdPartyId = mProfileId.getText().toString();
+        final String name = mUserName.getText().toString();
+        if (StringUtils.isBlank(thirdPartyId) || StringUtils.isBlank(name)) {
+          Toast toast = Toast.makeText(MainActivity.this, "Profile UserId and User Name cannot be empty",
+            Toast.LENGTH_SHORT);
           toast.show();
           return;
         }
 
-        if (!StringUtils.equals(authenticatedId, authenticatedIdValue)) {
-          authenticatedId = authenticatedIdValue;
-          tntRequestService = new TNTRequestService(authenticatedId);
+        userName = name;
+
+        if (!StringUtils.equals(profileId, thirdPartyId)) {
+          profileId = thirdPartyId;
+          tntRequestService = new TNTRequestService(profileId);
           if (executorService != null) {
             executorService.shutdown();
           }
@@ -67,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
           executorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-              if (StringUtils.isBlank(authenticatedId)) {
+              if (StringUtils.isBlank(profileId)) {
                 return;
               }
 
@@ -82,7 +90,10 @@ public class MainActivity extends AppCompatActivity {
                 profileParameters.put("velocity", "0");
               }
 
-              setOffer(profileParameters);
+              Map<String, String> mboxParameters = new HashMap<>();
+              mboxParameters.put("name", userName);
+
+              setOffer(mboxParameters, profileParameters);
 
             }
           }, DELAY, DELAY, TimeUnit.SECONDS);
@@ -119,9 +130,9 @@ public class MainActivity extends AppCompatActivity {
     return true;
   }
 
-  private void setOffer(Map<String, String> profileParameters) {
+  private void setOffer(Map<String, String> mboxParameters, Map<String, String> profileParameters) {
     try {
-      String content = tntRequestService.getContent(MBOX_NAME, profileParameters);
+      String content = tntRequestService.getContent(MBOX_NAME, mboxParameters, profileParameters);
       displayImageFromUrl(content, mImageView);
     } catch (final Exception e) {
       runOnUiThread(new Runnable() {

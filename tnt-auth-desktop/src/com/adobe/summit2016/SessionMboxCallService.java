@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Map;
 
 /**
  * @author Adobe Systems Inc.
@@ -24,10 +25,10 @@ public class SessionMboxCallService {
 
     public SessionMboxCallService(String thirdPartyId) {
         this.thirdPartyId = thirdPartyId;
-        this.clientCode = System.getProperty("clientCode");
+        this.clientCode = StringUtils.defaultString(System.getProperty("clientCode"), "adobeinternalsummitl");
     }
 
-    public String getContent(String mbox) throws TntApiCallException {
+    public String getContent(String mbox, Map<String, String> mboxParameters) throws TntApiCallException {
         String host = StringUtils.defaultString(edgeHost, clientCode + ".tt.omtrdc.net");
         try {
             URL urlToRequest = new URL("http://" + host + "/rest/v1/mbox/" + thirdPartyId +
@@ -40,6 +41,7 @@ public class SessionMboxCallService {
             JSONObject mboxRequestJson = new JSONObject();
             mboxRequestJson.put("mbox", mbox);
             mboxRequestJson.put("thirdPartyId", thirdPartyId);
+            mboxRequestJson.put("mboxParameters", new JSONObject(mboxParameters));
             DataOutputStream dStream = new DataOutputStream(urlConnection.getOutputStream());
             dStream.writeBytes(mboxRequestJson.toString());
             dStream.flush();

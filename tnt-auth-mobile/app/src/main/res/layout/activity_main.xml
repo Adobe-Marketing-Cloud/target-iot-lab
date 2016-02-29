@@ -13,35 +13,49 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="1. Authenticate with a Target id"
+        android:text="1. Enter User Name"
         android:id="@+id/firstTextView"
         />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/authenticateId"
-        android:hint="Authenticated Id"
+        android:id="@+id/userName"
+        android:hint="User Name"
         android:layout_below="@+id/firstTextView"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2. Enter Profile UserId"
+        android:id="@+id/secondTextView"
+        android:layout_below="@+id/userName"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/profileId"
+        android:hint="Profile UserId"
+        android:layout_below="@+id/secondTextView"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Submit"
         android:id="@+id/submit"
-        android:layout_below="@+id/authenticateId"/>
+        android:layout_below="@+id/profileId"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2. Drag your finger on the screen to record movement "
-        android:id="@+id/secondTextView"
+        android:text="3. Drag your finger on the screen to record movement "
+        android:id="@+id/thirdTextView"
         android:layout_below="@+id/submit"/>
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/secondTextView"/>
+        android:layout_below="@+id/thirdTextView"/>
 
 </RelativeLayout>

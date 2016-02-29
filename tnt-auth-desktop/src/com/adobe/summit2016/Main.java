@@ -1,10 +1,12 @@
 package com.adobe.summit2016;
 
+import com.google.common.collect.ImmutableMap;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -15,9 +17,12 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.StringReader;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,37 +30,61 @@ import java.util.concurrent.TimeUnit;
 public class Main extends Application {
 
     private static final int WINDOW_WIDTH = 460;
-    private static final int WINDOW_HEIGHT = 820;
+    private static final int WINDOW_HEIGHT = 880;
     private static final int IMAGE_WIDTH = 460;
     private static final int IMAGE_HEIGHT = 700;
     private static final String IMAGE_PATH = "image/final_large.jpg";
-    private static final String MBOX = System.getProperty("mbox");
+    private static final String MBOX = StringUtils.defaultString(System.getProperty("mbox"), "summit-2016-desk-app");
     private static final long DELAY = 5;
 
     private SessionMboxCallService sessionMboxCallService;
     private ScheduledExecutorService scheduledExecutorService;
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("Target Summit 2016");
+        primaryStage.setTitle("Wellness Home Automation Server");
         primaryStage.setResizable(false);
         primaryStage.setWidth(WINDOW_WIDTH);
         primaryStage.setHeight(WINDOW_HEIGHT);
         Scene scene = new Scene(new Group());
         AnchorPane anchorPane = getAnchorPane();
 
-        Label label = new Label("Enter your TNT authenticated ID");
-        label.setLayoutY(WINDOW_HEIGHT - 110);
+        final Text welcomeText = new Text();
+        welcomeText.setLayoutY(20);
+        welcomeText.setLayoutX(20);
 
-        final TextField tntAuthenticatedIdField = new TextField();
-        tntAuthenticatedIdField.setPrefColumnCount(10);
-        tntAuthenticatedIdField.setLayoutY(WINDOW_HEIGHT - 90);
+        Label userNameLabel = new Label("Enter User Name");
+        userNameLabel.setLayoutY(WINDOW_HEIGHT - 160);
+
+        final TextField userNameField = new TextField();
+        userNameField.setPrefColumnCount(10);
+        userNameField.setLayoutY(WINDOW_HEIGHT - 160);
+        userNameField.setLayoutX(130);
+
+        Label userIdLabel = new Label("Enter Profile UserId");
+        userIdLabel.setLayoutY(WINDOW_HEIGHT - 130);
+
+        final TextField profileId = new TextField();
+        profileId.setPrefColumnCount(10);
+        profileId.setLayoutY(WINDOW_HEIGHT - 130);
+        profileId.setLayoutX(130);
+
+        final CheckBox checkBox = new CheckBox("Connect to Physical Light Bulb");
+        checkBox.setSelected(false);
+        checkBox.setLayoutY(WINDOW_HEIGHT - 100);
+        checkBox.setLayoutX(130);
 
         Button submit = new Button("Submit");
-        submit.setLayoutY(WINDOW_HEIGHT - 60);
+        submit.setLayoutY(WINDOW_HEIGHT - 70);
+        submit.setLayoutX(130);
         submit.setOnAction(event -> {
-            String thirdPartyId = tntAuthenticatedIdField.getText();
-            if (StringUtils.isBlank(thirdPartyId)) {
+            String thirdPartyId = profileId.getText();
+            String userName = userNameField.getText();
+            if (StringUtils.isBlank(thirdPartyId) || StringUtils.isBlank(userName)) {
                 return;
             }
 
@@ -66,16 +95,32 @@ public class Main extends Application {
             sessionMboxCallService = new SessionMboxCallService(thirdPartyId);
             scheduledExecutorService.scheduleAtFixedRate(() -> {
                 try {
-                    String content = sessionMboxCallService.getContent(MBOX);
-                    replaceLightbulbColor(content, anchorPane);
+                    String content = sessionMboxCallService.getContent(MBOX, ImmutableMap.of("name", userName));
+                    Properties properties = new Properties();
+                    properties.load(new StringReader(content));
+
+                    String profileName = properties.getProperty("name");
+                    if (StringUtils.isNotBlank(profileName)) {
+                        welcomeText.setText("Hello " + profileName + "!");
+                    }
+
+                    replaceLightbulbColor(properties.getProperty("virtual_light"), anchorPane);
+
+                    if (checkBox.isSelected()) {
+                        LifxRequestHelper.setLighBulbStates(properties.getProperty("physical_light"));
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }, DELAY, DELAY, TimeUnit.SECONDS);
         });
 
-        anchorPane.getChildren().add(tntAuthenticatedIdField);
-        anchorPane.getChildren().add(label);
+        anchorPane.getChildren().add(userNameLabel);
+        anchorPane.getChildren().add(userNameField);
+        anchorPane.getChildren().add(welcomeText);
+        anchorPane.getChildren().add(userIdLabel);
+        anchorPane.getChildren().add(profileId);
+        anchorPane.getChildren().add(checkBox);
         anchorPane.getChildren().add(submit);
 
         scene.setRoot(anchorPane);
@@ -114,9 +159,5 @@ public class Main extends Application {
                 new Stop(1, Color.TRANSPARENT),
                 new Stop(0, Color.web(color)));
         return new Circle(225, 215, 250, shadePaint);
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

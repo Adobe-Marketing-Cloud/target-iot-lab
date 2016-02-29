@@ -6,6 +6,7 @@
 tnt-auth-desktop/.idea/**
 tnt-auth-desktop/.gradle/**
 tnt-auth-desktop/build/**
+tnt-auth-desktop/out/**
 
 tnt-auth-mobile/.idea/**
 tnt-auth-mobile/.gradle/**
