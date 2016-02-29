@@ -62,8 +62,8 @@ angular.module('wellnessApp', ['ngAnimate', 'ui.router'])
 				params.profile = profile;	
 				
                 params.name = $scope.formData.name;
-                params.mbox3rdPartyId = $scope.formData.name;
-                params.mboxSession = $scope.formData.name;
+                params.mbox3rdPartyId = $scope.formData.userId;
+                params.mboxSession = $scope.formData.userId;
                 return params;
             };
             mboxUpdate('wellnessImageMbox');
