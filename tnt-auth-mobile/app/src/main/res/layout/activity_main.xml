@@ -10,52 +10,86 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="summit.adobe.com.summitauthmboxapp.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="1. Enter User Name"
-        android:id="@+id/firstTextView"
-        />
+    <RelativeLayout
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:id="@+id/form"
+        android:layout_alignParentLeft="true">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/userName"
-        android:hint="User Name"
-        android:layout_below="@+id/firstTextView"/>
+        <TextView
+            android:id="@+id/firstTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1. Enter User Name"
+            />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="2. Enter Profile UserId"
-        android:id="@+id/secondTextView"
-        android:layout_below="@+id/userName"/>
+        <EditText
+            android:id="@+id/userName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/firstTextView"
+            android:hint="User Name"/>
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/profileId"
-        android:hint="Profile UserId"
-        android:layout_below="@+id/secondTextView"/>
+        <TextView
+            android:id="@+id/secondTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/userName"
+            android:text="2. Enter Profile UserId"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Submit"
-        android:id="@+id/submit"
-        android:layout_below="@+id/profileId"/>
+        <EditText
+            android:id="@+id/profileId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/secondTextView"
+            android:hint="Profile UserId"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="3. Drag your finger on the screen to record movement "
-        android:id="@+id/thirdTextView"
-        android:layout_below="@+id/submit"/>
+        <Button
+            android:id="@+id/submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profileId"
+            android:text="Submit"/>
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/thirdTextView"/>
+        <Button
+            android:id="@+id/stopButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profileId"
+            android:layout_toRightOf="@+id/submit"
+            android:text="Stop"/>
+
+        <TextView
+            android:id="@+id/thirdTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/submit"
+            android:text="3. Drag your finger on screen"/>
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/thirdTextView"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true">
+
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/debug"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </ScrollView>
+    </RelativeLayout>
+
 
 </RelativeLayout>

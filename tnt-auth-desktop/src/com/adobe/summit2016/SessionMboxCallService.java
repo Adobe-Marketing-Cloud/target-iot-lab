@@ -1,6 +1,7 @@
 package com.adobe.summit2016;
 
 
+import javafx.scene.control.TextArea;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -11,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -20,24 +22,26 @@ public class SessionMboxCallService {
 
     private final String thirdPartyId;
     private final String clientCode;
+    private final TextArea debugArea;
 
     private String edgeHost;
 
-    public SessionMboxCallService(String thirdPartyId) {
+    public SessionMboxCallService(String thirdPartyId, TextArea debugArea) {
+        this.debugArea = debugArea;
         this.thirdPartyId = thirdPartyId;
         this.clientCode = StringUtils.defaultString(System.getProperty("clientCode"), "adobeinternalsummitl");
     }
 
     public String getContent(String mbox, Map<String, String> mboxParameters) throws TntApiCallException {
         String host = StringUtils.defaultString(edgeHost, clientCode + ".tt.omtrdc.net");
+        String url = "http://" + host + "/rest/v1/mbox/" + thirdPartyId +
+                "?client=" + clientCode;
         try {
-            URL urlToRequest = new URL("http://" + host + "/rest/v1/mbox/" + thirdPartyId +
-                    "?client=" + clientCode);
+            URL urlToRequest = new URL(url);
             HttpURLConnection urlConnection = (HttpURLConnection) urlToRequest.openConnection();
             urlConnection.setDoOutput(true);
             urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("Content-Type", "application/json");
-
             JSONObject mboxRequestJson = new JSONObject();
             mboxRequestJson.put("mbox", mbox);
             mboxRequestJson.put("thirdPartyId", thirdPartyId);
@@ -46,6 +50,11 @@ public class SessionMboxCallService {
             dStream.writeBytes(mboxRequestJson.toString());
             dStream.flush();
             dStream.close();
+
+            debugArea.appendText(new Date().toString() + ": \n");
+            debugArea.appendText("POST to " + url + " " + mboxRequestJson.toString());
+            debugArea.appendText("\n");
+            debugArea.appendText("\n");
 
             int responseCode = urlConnection.getResponseCode();
             if (responseCode != 200) {
@@ -62,6 +71,11 @@ public class SessionMboxCallService {
             }
 
             String response = responseBuilder.toString();
+
+            debugArea.appendText("Response from Target: " + response);
+            debugArea.appendText("\n");
+            debugArea.appendText("\n");
+
             JSONObject jsonResponse = new JSONObject(response);
             this.edgeHost = jsonResponse.getString("edgeHost");
             return jsonResponse.getString("content");

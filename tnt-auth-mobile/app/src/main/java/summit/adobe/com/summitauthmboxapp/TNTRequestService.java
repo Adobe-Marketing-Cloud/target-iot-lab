@@ -19,20 +19,23 @@ public class TNTRequestService {
 
   private final String thirdPartyId;
   private final String clientCode;
+  private final MainActivity activity;
 
   private String edgeHost;
 
-  public TNTRequestService(String thirdPartyId) {
+  public TNTRequestService(String thirdPartyId, MainActivity activity) {
     this.thirdPartyId = thirdPartyId;
     this.clientCode = "adobeinternalsummitl";
+    this.activity = activity;
   }
 
   public String getContent(String mbox, Map<String, String> mboxParameters,
                            Map<String, String> profileParameters) throws TntApiCallException {
     String host = StringUtils.defaultString(edgeHost, clientCode + ".tt.omtrdc.net");
+    String url = "http://" + host + "/rest/v1/mbox/" + thirdPartyId +
+      "?client=" + clientCode;
     try {
-      URL urlToRequest = new URL("http://" + host + "/rest/v1/mbox/" + thirdPartyId +
-        "?client=" + clientCode);
+      URL urlToRequest = new URL(url);
       HttpURLConnection urlConnection = (HttpURLConnection) urlToRequest.openConnection();
       urlConnection.setDoOutput(true);
       urlConnection.setRequestMethod("POST");
@@ -47,6 +50,8 @@ public class TNTRequestService {
       dStream.writeBytes(mboxRequestJson.toString());
       dStream.flush();
       dStream.close();
+
+      activity.debug("POST to " + url + " " + mboxRequestJson.toString());
 
       int responseCode = urlConnection.getResponseCode();
       if (responseCode != 200) {
@@ -63,6 +68,9 @@ public class TNTRequestService {
       }
 
       String response = responseBuilder.toString();
+
+      activity.debug("Response from Target: " + response);
+
       JSONObject jsonResponse = new JSONObject(response);
       this.edgeHost = jsonResponse.getString("edgeHost");
       return jsonResponse.getString("content");

@@ -5,10 +5,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -17,6 +14,8 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
@@ -29,8 +28,8 @@ import java.util.concurrent.TimeUnit;
 
 public class Main extends Application {
 
-    private static final int WINDOW_WIDTH = 460;
-    private static final int WINDOW_HEIGHT = 880;
+    private static final int WINDOW_WIDTH = 830;
+    private static final int WINDOW_HEIGHT = 710;
     private static final int IMAGE_WIDTH = 460;
     private static final int IMAGE_HEIGHT = 700;
     private static final String IMAGE_PATH = "image/final_large.jpg";
@@ -40,6 +39,7 @@ public class Main extends Application {
 
     private SessionMboxCallService sessionMboxCallService;
     private ScheduledExecutorService scheduledExecutorService;
+    private LifxRequestHelper lifxRequestHelper;
 
     public static void main(String[] args) {
         launch(args);
@@ -55,33 +55,45 @@ public class Main extends Application {
         AnchorPane anchorPane = getAnchorPane();
 
         final Text welcomeText = new Text();
+        welcomeText.setFont(Font.font(null, FontWeight.BOLD, 14));
         welcomeText.setLayoutY(20);
         welcomeText.setLayoutX(20);
 
         Label userNameLabel = new Label("Enter User Name");
-        userNameLabel.setLayoutY(WINDOW_HEIGHT - 160);
+        userNameLabel.setLayoutX(470);
+        userNameLabel.setLayoutY(10);
 
         final TextField userNameField = new TextField();
         userNameField.setPrefColumnCount(10);
-        userNameField.setLayoutY(WINDOW_HEIGHT - 160);
-        userNameField.setLayoutX(130);
+        userNameField.setLayoutX(600);
+        userNameField.setLayoutY(10);
 
         Label userIdLabel = new Label("Enter Profile UserId");
-        userIdLabel.setLayoutY(WINDOW_HEIGHT - 130);
+        userIdLabel.setLayoutX(470);
+        userIdLabel.setLayoutY(40);
 
         final TextField profileId = new TextField();
         profileId.setPrefColumnCount(10);
-        profileId.setLayoutY(WINDOW_HEIGHT - 130);
-        profileId.setLayoutX(130);
+        profileId.setLayoutX(600);
+        profileId.setLayoutY(40);
 
         final CheckBox checkBox = new CheckBox("Connect to Physical Light Bulb");
         checkBox.setSelected(false);
-        checkBox.setLayoutY(WINDOW_HEIGHT - 100);
-        checkBox.setLayoutX(130);
+        checkBox.setLayoutY(70);
+        checkBox.setLayoutX(600);
+
+        final TextArea debugArea = new TextArea();
+        debugArea.setPrefRowCount(33);
+        debugArea.setPrefColumnCount(25);
+        debugArea.setWrapText(true);
+        debugArea.setLayoutX(470);
+        debugArea.setLayoutY(130);
+        debugArea.setEditable(false);
+        debugArea.setScrollLeft(Double.MAX_VALUE);
 
         Button submit = new Button("Submit");
-        submit.setLayoutY(WINDOW_HEIGHT - 70);
-        submit.setLayoutX(130);
+        submit.setLayoutY(100);
+        submit.setLayoutX(600);
         submit.setOnAction(event -> {
             String thirdPartyId = profileId.getText();
             String userName = userNameField.getText();
@@ -93,7 +105,7 @@ public class Main extends Application {
                 scheduledExecutorService.shutdownNow();
             }
             scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-            sessionMboxCallService = new SessionMboxCallService(thirdPartyId);
+            sessionMboxCallService = new SessionMboxCallService(thirdPartyId, debugArea);
             scheduledExecutorService.scheduleAtFixedRate(() -> {
                 try {
                     String content = sessionMboxCallService.getContent(MBOX, ImmutableMap.of("name", userName));
@@ -108,21 +120,36 @@ public class Main extends Application {
                     replaceLightbulbColor(properties.getProperty("virtual_light"), anchorPane);
 
                     if (checkBox.isSelected()) {
-                        LifxRequestHelper.setLighBulbStates(properties.getProperty("physical_light"));
+                        if (lifxRequestHelper == null) {
+                            lifxRequestHelper = new LifxRequestHelper(debugArea);
+                        }
+                        lifxRequestHelper.setLightBulbStates(properties.getProperty("physical_light"));
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    debugArea.appendText(e.getMessage());
                 }
             }, DELAY, DELAY, TimeUnit.SECONDS);
         });
 
+        Button stopButton = new Button("Stop");
+        stopButton.setLayoutY(100);
+        stopButton.setLayoutX(670);
+        stopButton.setOnAction(event -> {
+            if (scheduledExecutorService != null) {
+                scheduledExecutorService.shutdown();
+            }
+            scheduledExecutorService = null;
+        });
+
         anchorPane.getChildren().add(userNameLabel);
         anchorPane.getChildren().add(userNameField);
+        anchorPane.getChildren().add(debugArea);
         anchorPane.getChildren().add(welcomeText);
         anchorPane.getChildren().add(userIdLabel);
         anchorPane.getChildren().add(profileId);
         anchorPane.getChildren().add(checkBox);
         anchorPane.getChildren().add(submit);
+        anchorPane.getChildren().add(stopButton);
 
         scene.setRoot(anchorPane);
 

@@ -10,12 +10,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -30,8 +33,11 @@ public class MainActivity extends AppCompatActivity {
   private VelocityTracker mVelocityTracker = null;
   private EditText mProfileId;
   private EditText mUserName;
+  private TextView debugArea;
+  private ScrollView scrollView;
   private ImageView mImageView;
   private Button mSubmitButton;
+  private Button mStopButton;
   private volatile String profileId;
   private volatile String userName;
   private TNTRequestService tntRequestService;
@@ -42,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
+    debugArea = (TextView) findViewById(R.id.debug);
+
     mImageView = (ImageView) findViewById(R.id.imageView);
 
     mUserName = (EditText) findViewById(R.id.userName);
@@ -49,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
     mProfileId = (EditText) findViewById(R.id.profileId);
 
     mSubmitButton = (Button) findViewById(R.id.submit);
+
+    scrollView = (ScrollView) findViewById(R.id.scrollView);
 
     mSubmitButton.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -66,44 +76,57 @@ public class MainActivity extends AppCompatActivity {
 
         if (!StringUtils.equals(profileId, thirdPartyId)) {
           profileId = thirdPartyId;
-          tntRequestService = new TNTRequestService(profileId);
-          if (executorService != null) {
-            executorService.shutdown();
-          }
-          executorService = Executors.newSingleThreadScheduledExecutor();
-
-          executorService.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-              if (StringUtils.isBlank(profileId)) {
-                return;
-              }
-
-              Map<String, String> profileParameters = new HashMap<>();
-              if (mVelocityTracker != null) {
-                float xVelocity = mVelocityTracker.getXVelocity();
-                float yVelocity = mVelocityTracker.getYVelocity();
-                double velocity = Math.sqrt(xVelocity * xVelocity + yVelocity * yVelocity);
-
-                if (velocity < 50) {
-                  profileParameters.put("activeState", "couchpotato");
-                } else if (velocity < 500) {
-                  profileParameters.put("activeState", "fitnessfreak");
-                } else {
-                  profileParameters.put("activeState", "marathoner");
-                }
-              } else {
-                profileParameters.put("activeState", "couchpotato");
-              }
-
-              Map<String, String> mboxParameters = new HashMap<>();
-              mboxParameters.put("name", userName);
-
-              setOffer(mboxParameters, profileParameters);
-
-            }
-          }, DELAY, DELAY, TimeUnit.SECONDS);
+          tntRequestService = new TNTRequestService(profileId, MainActivity.this);
         }
+
+        if (executorService != null) {
+          executorService.shutdown();
+        }
+        executorService = null;
+        executorService = Executors.newSingleThreadScheduledExecutor();
+
+        executorService.scheduleAtFixedRate(new Runnable() {
+          @Override
+          public void run() {
+            if (StringUtils.isBlank(profileId)) {
+              return;
+            }
+
+            Map<String, String> profileParameters = new HashMap<>();
+            if (mVelocityTracker != null) {
+              float xVelocity = mVelocityTracker.getXVelocity();
+              float yVelocity = mVelocityTracker.getYVelocity();
+              double velocity = Math.sqrt(xVelocity * xVelocity + yVelocity * yVelocity);
+
+              if (velocity < 50) {
+                profileParameters.put("activeState", "couchpotato");
+              } else if (velocity < 900) {
+                profileParameters.put("activeState", "fitnessfreak");
+              } else {
+                profileParameters.put("activeState", "marathoner");
+              }
+            } else {
+              profileParameters.put("activeState", "couchpotato");
+            }
+
+            Map<String, String> mboxParameters = new HashMap<>();
+            mboxParameters.put("name", userName);
+
+            setOffer(mboxParameters, profileParameters);
+
+          }
+        }, DELAY, DELAY, TimeUnit.SECONDS);
+      }
+    });
+
+    mStopButton = (Button) findViewById(R.id.stopButton);
+    mStopButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (executorService != null) {
+          executorService.shutdown();
+        }
+        executorService = null;
       }
     });
 
@@ -141,15 +164,21 @@ public class MainActivity extends AppCompatActivity {
       String content = tntRequestService.getContent(MBOX_NAME, mboxParameters, profileParameters);
       displayImageFromUrl(content, mImageView);
     } catch (final Exception e) {
-      runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          Toast toast = Toast.makeText(MainActivity.this, "An exception occurred. Message: " + e.getMessage(),
-            Toast.LENGTH_SHORT);
-          toast.show();
-        }
-      });
+      debug("An exception occurred. Message: " + e.getMessage());
     }
+  }
+
+  void debug(final String message) {
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        debugArea.append(new Date().toString() + ": \n");
+        debugArea.append(message);
+        debugArea.append("\n");
+        debugArea.append("\n");
+        scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+      }
+    });
   }
 
   private void displayImageFromUrl(String urlValue, final ImageView imageView) throws IOException {
