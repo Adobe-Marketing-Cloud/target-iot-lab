@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
-  private static final String MBOX_NAME = "summit-auth-mobile";
+  private static final String MBOX_NAME = "wellnessMobile";
   private static final long DELAY = 5;
 
   private VelocityTracker mVelocityTracker = null;
@@ -85,9 +85,15 @@ public class MainActivity extends AppCompatActivity {
                 float yVelocity = mVelocityTracker.getYVelocity();
                 double velocity = Math.sqrt(xVelocity * xVelocity + yVelocity * yVelocity);
 
-                profileParameters.put("velocity", Double.toString(velocity));
+                if (velocity < 50) {
+                  profileParameters.put("activeState", "couchpotato");
+                } else if (velocity < 500) {
+                  profileParameters.put("activeState", "fitnessfreak");
+                } else {
+                  profileParameters.put("activeState", "marathoner");
+                }
               } else {
-                profileParameters.put("velocity", "0");
+                profileParameters.put("activeState", "couchpotato");
               }
 
               Map<String, String> mboxParameters = new HashMap<>();

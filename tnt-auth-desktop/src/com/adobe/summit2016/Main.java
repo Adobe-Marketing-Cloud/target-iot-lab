@@ -34,7 +34,8 @@ public class Main extends Application {
     private static final int IMAGE_WIDTH = 460;
     private static final int IMAGE_HEIGHT = 700;
     private static final String IMAGE_PATH = "image/final_large.jpg";
-    private static final String MBOX = StringUtils.defaultString(System.getProperty("mbox"), "summit-2016-desk-app");
+    private static final String MBOX = StringUtils.defaultString(System.getProperty("mbox"),
+            "wellnessHomeAutomationServer");
     private static final long DELAY = 5;
 
     private SessionMboxCallService sessionMboxCallService;
@@ -99,9 +100,9 @@ public class Main extends Application {
                     Properties properties = new Properties();
                     properties.load(new StringReader(content));
 
-                    String profileName = properties.getProperty("name");
+                    String profileName = properties.getProperty("greeting");
                     if (StringUtils.isNotBlank(profileName)) {
-                        welcomeText.setText("Hello " + profileName + "!");
+                        welcomeText.setText(profileName);
                     }
 
                     replaceLightbulbColor(properties.getProperty("virtual_light"), anchorPane);
