@@ -10,8 +10,5 @@ tnt-auth-desktop/out/**
 
 tnt-auth-mobile/.idea/**
 tnt-auth-mobile/.gradle/**
-tnt-auth-mobile/gradle/**
-tnt-auth-mobile/gradlew
-tnt-auth-mobile/gradlew.bat
 tnt-auth-mobile/local.properties
 tnt-auth-mobile/build/**
