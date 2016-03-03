@@ -29,7 +29,7 @@ public class SessionMboxCallService {
     public SessionMboxCallService(String thirdPartyId, TextArea debugArea) {
         this.debugArea = debugArea;
         this.thirdPartyId = thirdPartyId;
-        this.clientCode = StringUtils.defaultString(System.getProperty("clientCode"), "adobeinternalsummitl");
+        this.clientCode = StringUtils.defaultString(System.getProperty("clientCode"), "adobesummit021");
     }
 
     public String getContent(String mbox, Map<String, String> mboxParameters) throws TntApiCallException {
