@@ -162,6 +162,10 @@ public class MainActivity extends AppCompatActivity {
   private void setOffer(Map<String, String> mboxParameters, Map<String, String> profileParameters) {
     try {
       String content = tntRequestService.getContent(MBOX_NAME, mboxParameters, profileParameters);
+      if (StringUtils.isBlank(content)) {
+        return;
+      }
+
       displayImageFromUrl(content, mImageView);
     } catch (final Exception e) {
       debug("An exception occurred. Message: " + e.getMessage());
