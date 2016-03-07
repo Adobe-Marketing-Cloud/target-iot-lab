@@ -25,7 +25,7 @@ public class TNTRequestService {
 
   public TNTRequestService(String thirdPartyId, MainActivity activity) {
     this.thirdPartyId = thirdPartyId;
-    this.clientCode = "adobeinternalsummitl";
+    this.clientCode = "adobesummit021";
     this.activity = activity;
   }
 
