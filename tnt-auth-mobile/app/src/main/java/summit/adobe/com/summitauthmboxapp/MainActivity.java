@@ -167,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
       }
 
       displayImageFromUrl(content, mImageView);
+      tntRequestService.updateProfile(profileParameters);
     } catch (final Exception e) {
       debug("An exception occurred. Message: " + e.getMessage());
     }

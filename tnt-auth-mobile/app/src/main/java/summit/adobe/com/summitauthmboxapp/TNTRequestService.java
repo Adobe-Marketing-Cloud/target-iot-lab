@@ -78,4 +78,48 @@ public class TNTRequestService {
       throw new TntApiCallException("Exception while making a call to TNT. Message: " + e.getMessage());
     }
   }
+
+  public void updateProfile(Map<String, String> profileParameters) throws TntApiCallException {
+    if (profileParameters == null || profileParameters.size() == 0) {
+      activity.debug("Not making profile update call to Target since profileParameters is empty");
+      return;
+    }
+
+    StringBuilder parametersString = new StringBuilder();
+    for (Map.Entry<String, String> parameter : profileParameters.entrySet()) {
+      parametersString.append("&").append(parameter.getKey()).append("=").append(parameter.getValue());
+    }
+
+    String host = StringUtils.defaultString(edgeHost, clientCode + ".tt.omtrdc.net");
+    String url = "http://" + host + "/m2/demo/profile/update?mbox3rdPartyId=" + thirdPartyId + parametersString;
+    try {
+      URL urlToRequest = new URL(url);
+      HttpURLConnection urlConnection = (HttpURLConnection) urlToRequest.openConnection();
+      urlConnection.setDoOutput(true);
+      urlConnection.setRequestMethod("GET");
+
+      activity.debug("GET to " + url);
+
+      int responseCode = urlConnection.getResponseCode();
+      if (responseCode != 200) {
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(urlConnection.getErrorStream(), writer);
+        throw new TntApiCallException(responseCode + " " + writer.toString());
+      }
+
+      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+      String line;
+      StringBuilder responseBuilder = new StringBuilder();
+      while ((line = bufferedReader.readLine()) != null) {
+        responseBuilder.append(line);
+      }
+
+      String response = responseBuilder.toString();
+
+      activity.debug("Response from Target: " + response);
+    } catch (Exception e) {
+      throw new TntApiCallException("Exception while making a call to TNT. Message: " + e.getMessage());
+    }
+  }
+
 }
