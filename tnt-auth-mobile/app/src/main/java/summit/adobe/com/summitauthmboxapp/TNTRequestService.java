@@ -87,11 +87,11 @@ public class TNTRequestService {
 
     StringBuilder parametersString = new StringBuilder();
     for (Map.Entry<String, String> parameter : profileParameters.entrySet()) {
-      parametersString.append("&").append(parameter.getKey()).append("=").append(parameter.getValue());
+      parametersString.append("&").append("profile.").append(parameter.getKey()).append("=").append(parameter.getValue());
     }
 
     String host = StringUtils.defaultString(edgeHost, clientCode + ".tt.omtrdc.net");
-    String url = "http://" + host + "/m2/demo/profile/update?mbox3rdPartyId=" + thirdPartyId + parametersString;
+    String url = "http://" + host + "/m2/adobesummit021/profile/update?mbox3rdPartyId=" + thirdPartyId + parametersString;
     try {
       URL urlToRequest = new URL(url);
       HttpURLConnection urlConnection = (HttpURLConnection) urlToRequest.openConnection();
