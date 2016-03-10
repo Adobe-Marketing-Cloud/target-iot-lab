@@ -19,22 +19,27 @@
 <body ng-app="wellnessApp">
 
 <div class="page-header text-center">
-    <h2>Wellness Smart Display Center</h2>
+    <h2>SmartFridge Display Center</h2>
+</div>
 
-    <div id="classicMboxId" class="mboxDefault">
-        Your activity state
+
+<div class="row">
+    <div id="classicMboxId" class="mboxDefault col">
+<img src="http://adobe-marketing-cloud.github.io/target-iot-lab/images/unknown_user.png"  style="max-width:100%;max-height:100%;"/>
     </div>
 
+
     <script>
-        mboxDefine('classicMboxId', 'wellnessImageMbox');
-        mboxUpdate('wellnessImageMbox');
+        mboxDefine('classicMboxId', 'wellnessKioskMbox');
+        mboxUpdate('wellnessKioskMbox');
     </script>
+	<!-- views will be injected here -->
+	<div class="container col">
+	    <div ui-view></div>
+	</div>	
 </div>
 
-<!-- views will be injected here -->
-<div class="container">
-    <div ui-view></div>
-</div>
+
 
 <div class="row">
     <div class="col-sm-8 col-sm-offset-2">

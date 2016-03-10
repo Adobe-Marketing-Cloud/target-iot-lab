@@ -1,13 +1,24 @@
 /* BASIC STYLINGS
 ============================================================================= */
-body                            { padding-top:20px; }
+body                            { padding-top:20px; margin-left:50px; margin-right:50px; }
 pre                             { margin-bottom:20px; }
+
+.row {
+  display: flex; /* equal height of the children */
+}
+
+.col {
+  flex: 1; /* additionally, equal width */  
+  padding: 1em;
+
+}
 
 /* form styling */
 #form-container                { background:#2f2f2f; margin-bottom:20px;
     border-radius:5px; }
 #form-container .page-header   { background:#151515; margin:0; padding:30px;
-    border-top-left-radius:5px; border-top-right-radius:5px; }
+    border-top-left-radius:5px; border-top-right-radius:5px; 
+   }
 
 /* numbered buttons */
 #status-buttons                 {  }
