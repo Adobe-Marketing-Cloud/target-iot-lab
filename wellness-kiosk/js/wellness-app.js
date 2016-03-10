@@ -25,9 +25,9 @@ angular.module('wellnessApp', ['ngAnimate', 'ui.router'])
             })
 
             // url will be /form/interests
-            .state('form.mood', {
-                url: '/mood',
-                templateUrl: 'form-mood.html'
+            .state('form.activeState', {
+                url: '/activeState',
+                templateUrl: 'form-activeState.html'
             });
             //
             //// url will be /form/payment
@@ -55,18 +55,18 @@ angular.module('wellnessApp', ['ngAnimate', 'ui.router'])
             window.targetPageParamsAll = function() {
                 var profile = {};
                 var params = {};
-				if ($scope.formData.mood != '') {
-                	profile.mood = $scope.formData.mood;
-					
+				if ($scope.formData.activeState != '') {
+                	profile.activeState = $scope.formData.activeState;
 				} 
+
 				params.profile = profile;	
 				
                 params.name = $scope.formData.name;
-                params.mbox3rdPartyId = $scope.formData.name;
-                params.mboxSession = $scope.formData.name;
+                params.mbox3rdPartyId = $scope.formData.userId;
+                params.mboxSession = $scope.formData.userId;
                 return params;
             };
-            mboxUpdate('wellnessImageMbox');
+            mboxUpdate('wellnessKioskMbox');
         };
 
 
