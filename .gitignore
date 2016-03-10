@@ -3,12 +3,12 @@
 *.iws
 *.ids
 
-tnt-auth-desktop/.idea/**
-tnt-auth-desktop/.gradle/**
-tnt-auth-desktop/build/**
-tnt-auth-desktop/out/**
+wellness-desktop/.idea/**
+wellness-desktop/.gradle/**
+wellness-desktop/build/**
+wellness-desktop/out/**
 
-tnt-auth-mobile/.idea/**
-tnt-auth-mobile/.gradle/**
-tnt-auth-mobile/local.properties
-tnt-auth-mobile/build/**
+wellness-mobile/.idea/**
+wellness-mobile/.gradle/**
+wellness-mobile/local.properties
+wellness-mobile/build/**
