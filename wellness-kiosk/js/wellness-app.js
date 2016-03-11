@@ -66,7 +66,7 @@ angular.module('wellnessApp', ['ngAnimate', 'ui.router'])
                 params.mboxSession = $scope.formData.userId;
                 return params;
             };
-            mboxUpdate('wellnessKioskMbox');
+            mboxUpdate('wellnessFridgeMbox');
         };
 
 
