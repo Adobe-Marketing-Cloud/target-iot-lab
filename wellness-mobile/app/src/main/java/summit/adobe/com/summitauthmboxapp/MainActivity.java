@@ -1,7 +1,12 @@
 package summit.adobe.com.summitauthmboxapp;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
@@ -15,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import java.io.IOException;
 import java.net.URL;
@@ -25,11 +31,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
   private static final String MBOX_NAME = "wellnessMobile";
   private static final long DELAY = 5;
+  private static final long DELTA_TIME_MILLIS = 100;
+  private static final int WINDOW_SIZE = (int) (TimeUnit.SECONDS.toMillis(5) / DELTA_TIME_MILLIS);
 
+
+  private long lastUpdate = 0;
+  private float lastX, lastY, lastZ;
+  private DescriptiveStatistics descriptiveStatistics;
+  private SensorManager mSensorManager;
+  private Sensor mSenAccelerometer;
   private VelocityTracker mVelocityTracker = null;
   private EditText mProfileId;
   private EditText mUserName;
@@ -47,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    descriptiveStatistics = new DescriptiveStatistics(WINDOW_SIZE);
 
     debugArea = (TextView) findViewById(R.id.debug);
 
@@ -106,7 +122,14 @@ public class MainActivity extends AppCompatActivity {
                 profileParameters.put("activeState", "marathoner");
               }
             } else {
-              profileParameters.put("activeState", "couchpotato");
+              double mean = descriptiveStatistics.getMean();
+              if (mean < 500) {
+                profileParameters.put("activeState", "couchpotato");
+              } else if (mean < 1000) {
+                profileParameters.put("activeState", "fitnessfreak");
+              } else {
+                profileParameters.put("activeState", "marathoner");
+              }
             }
 
             Map<String, String> mboxParameters = new HashMap<>();
@@ -130,6 +153,9 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
+    mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+    mSenAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    mSensorManager.registerListener(this, mSenAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
   }
 
   @Override
@@ -157,6 +183,36 @@ public class MainActivity extends AppCompatActivity {
         break;
     }
     return true;
+  }
+
+  @Override
+  public void onSensorChanged(SensorEvent sensorEvent) {
+    Sensor mySensor = sensorEvent.sensor;
+
+    if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+      float x = sensorEvent.values[0];
+      float y = sensorEvent.values[1];
+      float z = sensorEvent.values[2];
+
+      long curTime = System.currentTimeMillis();
+
+      if ((curTime - lastUpdate) > DELTA_TIME_MILLIS) {
+        long diffTime = (curTime - lastUpdate);
+        lastUpdate = curTime;
+
+        float speed = Math.abs(x + y + z - lastX - lastY - lastZ) / diffTime * 10000;
+        descriptiveStatistics.addValue(speed);
+
+        lastX = x;
+        lastY = y;
+        lastZ = z;
+      }
+    }
+  }
+
+  @Override
+  public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
   }
 
   private void setOffer(Map<String, String> mboxParameters, Map<String, String> profileParameters) {
