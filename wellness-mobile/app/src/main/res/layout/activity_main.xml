@@ -20,7 +20,7 @@
             android:id="@+id/firstTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1. Enter User Name"
+            android:text="1. Enter LabID"
             />
 
         <EditText
@@ -28,21 +28,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/firstTextView"
-            android:hint="User Name"/>
+            android:hint="LabID"/>
 
         <TextView
             android:id="@+id/secondTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/userName"
-            android:text="2. Enter Profile UserId"/>
+            android:text="2. Enter VisitorID"/>
 
         <EditText
             android:id="@+id/profileId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/secondTextView"
-            android:hint="Profile UserId"/>
+            android:hint="VisitorID"/>
 
         <Button
             android:id="@+id/submit"

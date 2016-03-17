@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         String thirdPartyId = mProfileId.getText().toString();
         final String name = mUserName.getText().toString();
         if (StringUtils.isBlank(thirdPartyId) || StringUtils.isBlank(name)) {
-          Toast toast = Toast.makeText(MainActivity.this, "Profile UserId and User Name cannot be empty",
+          Toast toast = Toast.makeText(MainActivity.this, "LabID and VisitorID cannot be empty",
             Toast.LENGTH_SHORT);
           toast.show();
           return;
