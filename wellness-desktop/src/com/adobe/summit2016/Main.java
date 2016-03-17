@@ -59,7 +59,7 @@ public class Main extends Application {
         welcomeText.setLayoutY(20);
         welcomeText.setLayoutX(20);
 
-        Label userNameLabel = new Label("Enter User Name");
+        Label userNameLabel = new Label("Enter LabID");
         userNameLabel.setLayoutX(470);
         userNameLabel.setLayoutY(10);
 
@@ -68,7 +68,7 @@ public class Main extends Application {
         userNameField.setLayoutX(600);
         userNameField.setLayoutY(10);
 
-        Label userIdLabel = new Label("Enter Profile UserId");
+        Label userIdLabel = new Label("Enter VisitorId");
         userIdLabel.setLayoutX(470);
         userIdLabel.setLayoutY(40);
 
