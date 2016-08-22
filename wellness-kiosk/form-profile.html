@@ -6,10 +6,10 @@
     <input type="text" class="form-control" name="userId" ng-model="formData.userId">
 
     <label for="name">Enter Marketing Cloud VisitorId</label>
-    <input type="text" class="form-control" name="visitorId" ng-model="formData.visitorId">
+    <input id="mcIdValue" type="text" class="form-control" name="visitorId" ng-model="formData.visitorId">
 
 </div>
 
 <div class="form-group row">
-    <button type="submit" class="btn">Ok</button>
+    <button type="submit" class="btn" ng-click="processOkButton()">Ok</button>
 </div>

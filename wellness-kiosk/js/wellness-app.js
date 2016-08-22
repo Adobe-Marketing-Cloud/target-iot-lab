@@ -50,17 +50,21 @@ angular.module('wellnessApp', ['ngAnimate', 'ui.router'])
         $scope.formData = {};
         $scope.galleryData = {};
 
+
         // function to process the form
         $scope.processForm = function() {
+        };
+
+        $scope.processOkButton = function() {
             window.targetPageParamsAll = function() {
                 var profile = {};
                 var params = {};
-				if ($scope.formData.activeState != '') {
-                	profile.activeState = $scope.formData.activeState;
-				} 
+                if ($scope.formData.activeState != '') {
+                    profile.activeState = $scope.formData.activeState;
+                } 
 
-				params.profile = profile;	
-				
+                params.profile = profile;   
+                
                 params.name = $scope.formData.name;
                 params.mbox3rdPartyId = $scope.formData.userId;
                 params.mboxMCGVID = $scope.formData.visitorId;
@@ -69,9 +73,12 @@ angular.module('wellnessApp', ['ngAnimate', 'ui.router'])
                 params.mboxSession = $scope.formData.userId;
                 return params;
             };
-            mboxUpdate('mboxDGenabled');
-        };
 
+            if ($scope.formData.visitorId) {   
+                mboxDefine('classicMboxId', 'mboxDGenabled'); 
+                mboxUpdate('mboxDGenabled');
+            }
+        };
 
     });
 
