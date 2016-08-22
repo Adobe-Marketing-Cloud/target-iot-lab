@@ -63,10 +63,13 @@ angular.module('wellnessApp', ['ngAnimate', 'ui.router'])
 				
                 params.name = $scope.formData.name;
                 params.mbox3rdPartyId = $scope.formData.userId;
+                params.mboxMCGVID = $scope.formData.visitorId;
+                params.mboxAAMB = "NRX38WO0n5BH8Th-nqAG_A";
+                params.mboxMCGLH = 9;
                 params.mboxSession = $scope.formData.userId;
                 return params;
             };
-            mboxUpdate('wellnessKioskMbox');
+            mboxUpdate('mboxDGenabled');
         };
 
 
